@@ -26,6 +26,16 @@
         .container {
             width: 92%;
             max-width: 430px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.13);
+            padding: 25px;
+            border-radius: 22px;
+            backdrop-filter: blur(8px);
+        }
+
+        #homeScreen {
             text-align: center;
         }
 
@@ -41,23 +51,16 @@
 
         .tagline {
             color: #d9f5e5;
-            margin-bottom: 35px;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.12);
-            padding: 25px;
-            border-radius: 20px;
-            backdrop-filter: blur(8px);
+            margin-bottom: 30px;
         }
 
         button {
             width: 100%;
             padding: 15px;
-            margin-top: 15px;
+            margin-top: 12px;
             border: none;
             border-radius: 12px;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -77,13 +80,15 @@
             display: none;
         }
 
-        .mission {
-            text-align: left;
+        .topBar {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
-        .mission h2 {
-            margin-bottom: 10px;
+        .missionTitle {
+            margin-bottom: 15px;
         }
 
         .question {
@@ -91,6 +96,7 @@
             padding: 18px;
             border-radius: 15px;
             line-height: 1.5;
+            margin-bottom: 15px;
         }
 
         .answer {
@@ -98,10 +104,23 @@
             color: #222;
         }
 
+        .answer:disabled {
+            opacity: 0.6;
+        }
+
         #feedback {
+            display: none;
             margin-top: 20px;
-            font-weight: bold;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.18);
             line-height: 1.5;
+        }
+
+        #nextBtn {
+            display: none;
+            background: #ffd700;
+            color: #164b2e;
         }
     </style>
 </head>
@@ -110,7 +129,7 @@
 
 <div class="container">
 
-    <!-- HOME SCREEN -->
+    <!-- HOME -->
     <div id="homeScreen" class="card">
 
         <div class="flag">🇳🇬</div>
@@ -136,12 +155,21 @@
     </div>
 
 
-    <!-- GAME SCREEN -->
+    <!-- GAME -->
     <div id="gameScreen" class="card">
 
-        <div class="mission">
-            <p>MISSION 1 OF 5</p>
-            <h2>🗳️ The Election</h2>
+        <div class="topBar">
+            <span>MISSION 1 OF 5</span>
+            <span>🏆 <span id="score">0</span></span>
+        </div>
+
+        <div class="topBar">
+            <span>🗳️ Election</span>
+            <span>⏱️ <span id="timer">20</span>s</span>
+        </div>
+
+        <div class="missionTitle">
+            <h2>The Election</h2>
         </div>
 
         <div class="question">
@@ -159,6 +187,7 @@
 
         </div>
 
+
         <button class="answer" onclick="checkAnswer(false)">
             A. Accept the money
         </button>
@@ -175,7 +204,13 @@
             D. Fight the person
         </button>
 
+
+        <!-- AI FEEDBACK -->
         <div id="feedback"></div>
+
+        <button id="nextBtn" onclick="nextMission()">
+            NEXT MISSION ➡️
+        </button>
 
     </div>
 
@@ -184,39 +219,132 @@
 
 <script>
 
+let score = 0;
+let timeLeft = 20;
+let timerInterval;
+let answered = false;
+
+
 function startGame() {
 
     document.getElementById("homeScreen").style.display = "none";
-
     document.getElementById("gameScreen").style.display = "block";
+
+    startTimer();
+
+}
+
+
+function startTimer() {
+
+    clearInterval(timerInterval);
+
+    timeLeft = 20;
+
+    document.getElementById("timer").textContent = timeLeft;
+
+    timerInterval = setInterval(function() {
+
+        timeLeft--;
+
+        document.getElementById("timer").textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            if (!answered) {
+
+                showFeedback(
+                    "⏰ Time's up!<br><br>" +
+                    "🤖 AI Civic Coach: Think carefully about " +
+                    "peaceful and lawful ways to protect your community."
+                );
+
+                disableAnswers();
+
+            }
+
+        }
+
+    }, 1000);
 
 }
 
 
 function checkAnswer(correct) {
 
-    const feedback = document.getElementById("feedback");
+    if (answered) return;
+
+    answered = true;
+
+    clearInterval(timerInterval);
 
     if (correct) {
 
-        feedback.innerHTML =
+        score += 50;
+
+        document.getElementById("score").textContent = score;
+
+        showFeedback(
             "✅ Excellent decision!<br><br>" +
-            "🤖 AI Civic Coach: A responsible citizen " +
-            "should reject vote buying and use lawful ways " +
-            "to report the situation.";
+            "🤖 <strong>AI Civic Coach:</strong> " +
+            "A responsible citizen should reject vote buying " +
+            "and report the situation through lawful channels.<br><br>" +
+            "🏆 +50 Civic Points"
+        );
 
     } else {
 
-        feedback.innerHTML =
+        showFeedback(
             "❌ Not the best choice.<br><br>" +
-            "🤖 AI Civic Coach: Think about peaceful and " +
-            "lawful ways to protect the community.";
+            "🤖 <strong>AI Civic Coach:</strong> " +
+            "A responsible citizen should use peaceful and " +
+            "lawful ways to protect the community."
+        );
 
     }
+
+    disableAnswers();
+
+    document.getElementById("nextBtn").style.display = "block";
+
+}
+
+
+function showFeedback(message) {
+
+    const feedback = document.getElementById("feedback");
+
+    feedback.innerHTML = message;
+    feedback.style.display = "block";
+
+}
+
+
+function disableAnswers() {
+
+    const buttons = document.querySelectorAll(".answer");
+
+    buttons.forEach(function(button) {
+
+        button.disabled = true;
+
+    });
+
+}
+
+
+function nextMission() {
+
+    alert(
+        "🚰 Mission 2 is coming!\n\n" +
+        "The Water Problem"
+    );
 
 }
 
 </script>
 
 </body>
-  </html>
+</html>
