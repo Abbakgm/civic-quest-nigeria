@@ -35,7 +35,8 @@
             backdrop-filter: blur(8px);
         }
 
-        #homeScreen {
+        #homeScreen,
+        #resultScreen {
             text-align: center;
         }
 
@@ -51,7 +52,17 @@
 
         .tagline {
             color: #d9f5e5;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 5px;
+            outline: none;
         }
 
         button {
@@ -76,7 +87,8 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        #gameScreen {
+        #gameScreen,
+        #resultScreen {
             display: none;
         }
 
@@ -122,6 +134,21 @@
             background: #ffd700;
             color: #164b2e;
         }
+
+        .resultScore {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 20px 0 10px;
+        }
+
+        .level {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        .playerName {
+            color: #d9f5e5;
+        }
     </style>
 </head>
 
@@ -139,6 +166,13 @@
         <p class="tagline">
             Learn • Decide • Build Nigeria
         </p>
+
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your name"
+            maxlength="20"
+        >
 
         <button class="start" onclick="startGame()">
             🎮 START GAME
@@ -173,11 +207,13 @@
         </div>
 
         <div class="question">
+
             <p id="questionText"></p>
 
             <br>
 
             <strong id="questionPrompt"></strong>
+
         </div>
 
         <div id="answers"></div>
@@ -186,6 +222,36 @@
 
         <button id="nextBtn" onclick="nextMission()">
             NEXT MISSION ➡️
+        </button>
+
+    </div>
+
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="card">
+
+        <div class="flag">🏆</div>
+
+        <h1>Mission Complete!</h1>
+
+        <p class="playerName">
+            Player: <strong id="finalName"></strong>
+        </p>
+
+        <div class="resultScore">
+            <span id="finalScore">0</span>
+        </div>
+
+        <p>Civic Points</p>
+
+        <div class="level" id="civicLevel">
+            ⭐ Beginner Citizen
+        </div>
+
+        <p id="finalMessage"></p>
+
+        <button class="start" onclick="restartGame()">
+            🔄 PLAY AGAIN
         </button>
 
     </div>
@@ -243,6 +309,30 @@ const missions = [
 
         feedback:
         "Good civic action means reporting community problems through the proper channels and working peacefully toward a solution."
+    },
+
+    {
+        number: 3,
+        icon: "🌳",
+        title: "Protect Our Environment",
+
+        story:
+        "People are dumping waste in an open area near your community.",
+
+        prompt:
+        "What should a responsible citizen do?",
+
+        answers: [
+            "A. Join them",
+            "B. Ignore the problem",
+            "C. Encourage proper waste disposal and report the problem",
+            "D. Burn all the waste"
+        ],
+
+        correct: 2,
+
+        feedback:
+        "Protecting the environment is everyone's responsibility. Encourage proper waste disposal and report serious environmental problems."
     }
 
 ];
@@ -253,19 +343,39 @@ let score = 0;
 let timeLeft = 20;
 let timerInterval;
 let answered = false;
+let playerName = "";
 
 
 function startGame() {
 
-    document.getElementById("homeScreen").style.display = "none";
+    const nameInput =
+        document.getElementById("playerName");
 
-    document.getElementById("gameScreen").style.display = "block";
+    playerName =
+        nameInput.value.trim();
+
+    if (playerName === "") {
+
+        alert("Please enter your name first.");
+
+        return;
+
+    }
 
     currentMission = 0;
 
     score = 0;
 
     document.getElementById("score").textContent = score;
+
+    document.getElementById("homeScreen").style.display =
+        "none";
+
+    document.getElementById("resultScreen").style.display =
+        "none";
+
+    document.getElementById("gameScreen").style.display =
+        "block";
 
     showMission();
 
@@ -302,7 +412,8 @@ function showMission() {
 
     mission.answers.forEach(function(answer, index) {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
         button.className = "answer";
 
@@ -318,10 +429,11 @@ function showMission() {
 
     });
 
+    document.getElementById("feedback").style.display =
+        "none";
 
-    document.getElementById("feedback").style.display = "none";
-
-    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display =
+        "none";
 
     startTimer();
 
@@ -449,46 +561,68 @@ function nextMission() {
 
     } else {
 
-        showCompletion();
+        showResults();
 
     }
 
 }
 
 
-function showCompletion() {
+function showResults() {
 
     clearInterval(timerInterval);
 
-    document.getElementById("missionNumber").textContent =
-        "MISSIONS COMPLETE";
-
-    document.getElementById("missionIcon").textContent =
-        "🏆";
-
-    document.getElementById("missionTitle").textContent =
-        "Great Work!";
-
-    document.getElementById("questionText").innerHTML =
-        "You completed the available prototype missions.";
-
-    document.getElementById("questionPrompt").innerHTML =
-        "Your Civic Score: " + score;
-
-    document.getElementById("answers").innerHTML = "";
-
-    showFeedback(
-        "🇳🇬 <strong>Civic Quest: Nigeria</strong><br><br>" +
-        "You are learning how responsible citizens " +
-        "can make better decisions in their communities."
-    );
-
-    document.getElementById("nextBtn").style.display =
+    document.getElementById("gameScreen").style.display =
         "none";
+
+    document.getElementById("resultScreen").style.display =
+        "block";
+
+    document.getElementById("finalName").textContent =
+        playerName;
+
+    document.getElementById("finalScore").textContent =
+        score;
+
+    let level = "";
+
+    if (score >= 150) {
+
+        level = "🏆 Civic Champion";
+
+    } else if (score >= 100) {
+
+        level = "⭐ Active Citizen";
+
+    } else {
+
+        level = "🌱 Beginner Citizen";
+
+    }
+
+    document.getElementById("civicLevel").textContent =
+        level;
+
+    document.getElementById("finalMessage").textContent =
+        "Keep learning, making responsible decisions, and helping your community.";
+
+}
+
+
+function restartGame() {
+
+    document.getElementById("resultScreen").style.display =
+        "none";
+
+    document.getElementById("homeScreen").style.display =
+        "block";
+
+    document.getElementById("playerName").value =
+        "";
 
 }
 
 </script>
 
 </body>
-  </html>
+</html>
