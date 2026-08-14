@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Civic Quest: Nigeria</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #063b25, #0b6b3a);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 430px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.13);
+            padding: 25px;
+            border-radius: 22px;
+            backdrop-filter: blur(8px);
+        }
+
+        #homeScreen {
+            text-align: center;
+        }
+
+        .flag {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: #d9f5e5;
+            margin-bottom: 30px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start {
+            background: white;
+            color: #075c32;
+        }
+
+        .secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        #gameScreen {
+            display: none;
+        }
+
+        .topBar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+
+        .missionTitle {
+            margin-bottom: 15px;
+        }
+
+        .question {
+            background: rgba(0,0,0,0.15);
+            padding: 18px;
+            border-radius: 15px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            background: white;
+            color: #222;
+        }
+
+        .answer:disabled {
+            opacity: 0.6;
+        }
+
+        #feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.18);
+            line-height: 1.5;
+        }
+
+        #nextBtn {
+            display: none;
+            background: #ffd700;
+            color: #164b2e;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HOME SCREEN -->
+    <div id="homeScreen" class="card">
+
+        <div class="flag">🇳🇬</div>
+
+        <h1>Civic Quest: Nigeria</h1>
+
+        <p class="tagline">
+            Learn • Decide • Build Nigeria
+        </p>
+
+        <button class="start" onclick="startGame()">
+            🎮 START GAME
+        </button>
+
+        <button class="secondary">
+            🗺️ MISSIONS
+        </button>
+
+        <button class="secondary">
+            🏆 LEADERBOARD
+        </button>
+
+    </div>
+
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="card">
+
+        <div class="topBar">
+            <span id="missionNumber">MISSION 1 OF 5</span>
+            <span>🏆 <span id="score">0</span></span>
+        </div>
+
+        <div class="topBar">
+            <span id="missionIcon">🗳️</span>
+            <span>⏱️ <span id="timer">20</span>s</span>
+        </div>
+
+        <div class="missionTitle">
+            <h2 id="missionTitle">The Election</h2>
+        </div>
+
+        <div class="question">
+            <p id="questionText"></p>
+
+            <br>
+
+            <strong id="questionPrompt"></strong>
+        </div>
+
+        <div id="answers"></div>
+
+        <div id="feedback"></div>
+
+        <button id="nextBtn" onclick="nextMission()">
+            NEXT MISSION ➡️
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const missions = [
+
+    {
+        number: 1,
+        icon: "🗳️",
+        title: "The Election",
+
+        story:
+        "You discover that someone is trying to influence voters in your community by offering them money.",
+
+        prompt:
+        "What should a responsible citizen do?",
+
+        answers: [
+            "A. Accept the money",
+            "B. Ignore the situation",
+            "C. Reject it and report it properly",
+            "D. Fight the person"
+        ],
+
+        correct: 2,
+
+        feedback:
+        "A responsible citizen should reject vote buying and report the situation through lawful channels."
+    },
+
+    {
+        number: 2,
+        icon: "🚰",
+        title: "The Water Problem",
+
+        story:
+        "The water supply in your community has stopped working, and many families are struggling to get clean water.",
+
+        prompt:
+        "What is the most responsible action?",
+
+        answers: [
+            "A. Destroy public property",
+            "B. Report the problem to the appropriate authority",
+            "C. Ignore the problem",
+            "D. Spread false information online"
+        ],
+
+        correct: 1,
+
+        feedback:
+        "Good civic action means reporting community problems through the proper channels and working peacefully toward a solution."
+    }
+
+];
+
+
+let currentMission = 0;
+let score = 0;
+let timeLeft = 20;
+let timerInterval;
+let answered = false;
+
+
+function startGame() {
+
+    document.getElementById("homeScreen").style.display = "none";
+
+    document.getElementById("gameScreen").style.display = "block";
+
+    currentMission = 0;
+
+    score = 0;
+
+    document.getElementById("score").textContent = score;
+
+    showMission();
+
+}
+
+
+function showMission() {
+
+    clearInterval(timerInterval);
+
+    answered = false;
+
+    const mission = missions[currentMission];
+
+    document.getElementById("missionNumber").textContent =
+        "MISSION " + mission.number + " OF 5";
+
+    document.getElementById("missionIcon").textContent =
+        mission.icon;
+
+    document.getElementById("missionTitle").textContent =
+        mission.title;
+
+    document.getElementById("questionText").textContent =
+        mission.story;
+
+    document.getElementById("questionPrompt").textContent =
+        mission.prompt;
+
+    const answersContainer =
+        document.getElementById("answers");
+
+    answersContainer.innerHTML = "";
+
+    mission.answers.forEach(function(answer, index) {
+
+        const button = document.createElement("button");
+
+        button.className = "answer";
+
+        button.textContent = answer;
+
+        button.onclick = function() {
+
+            checkAnswer(index);
+
+        };
+
+        answersContainer.appendChild(button);
+
+    });
+
+
+    document.getElementById("feedback").style.display = "none";
+
+    document.getElementById("nextBtn").style.display = "none";
+
+    startTimer();
+
+}
+
+
+function startTimer() {
+
+    timeLeft = 20;
+
+    document.getElementById("timer").textContent =
+        timeLeft;
+
+    timerInterval = setInterval(function() {
+
+        timeLeft--;
+
+        document.getElementById("timer").textContent =
+            timeLeft;
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            if (!answered) {
+
+                answered = true;
+
+                showFeedback(
+                    "⏰ Time's up!<br><br>" +
+                    "🤖 <strong>AI Civic Coach:</strong> " +
+                    "Think carefully about the most peaceful " +
+                    "and responsible action."
+                );
+
+                disableAnswers();
+
+                document.getElementById("nextBtn").style.display =
+                    "block";
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+
+function checkAnswer(selectedIndex) {
+
+    if (answered) return;
+
+    answered = true;
+
+    clearInterval(timerInterval);
+
+    const mission = missions[currentMission];
+
+    if (selectedIndex === mission.correct) {
+
+        score += 50;
+
+        document.getElementById("score").textContent =
+            score;
+
+        showFeedback(
+            "✅ Excellent decision!<br><br>" +
+            "🤖 <strong>AI Civic Coach:</strong> " +
+            mission.feedback +
+            "<br><br>" +
+            "🏆 +50 Civic Points"
+        );
+
+    } else {
+
+        showFeedback(
+            "❌ Not the best choice.<br><br>" +
+            "🤖 <strong>AI Civic Coach:</strong> " +
+            mission.feedback
+        );
+
+    }
+
+    disableAnswers();
+
+    document.getElementById("nextBtn").style.display =
+        "block";
+
+}
+
+
+function showFeedback(message) {
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.innerHTML = message;
+
+    feedback.style.display = "block";
+
+}
+
+
+function disableAnswers() {
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(function(button) {
+
+        button.disabled = true;
+
+    });
+
+}
+
+
+function nextMission() {
+
+    currentMission++;
+
+    if (currentMission < missions.length) {
+
+        showMission();
+
+    } else {
+
+        showCompletion();
+
+    }
+
+}
+
+
+function showCompletion() {
+
+    clearInterval(timerInterval);
+
+    document.getElementById("missionNumber").textContent =
+        "MISSIONS COMPLETE";
+
+    document.getElementById("missionIcon").textContent =
+        "🏆";
+
+    document.getElementById("missionTitle").textContent =
+        "Great Work!";
+
+    document.getElementById("questionText").innerHTML =
+        "You completed the available prototype missions.";
+
+    document.getElementById("questionPrompt").innerHTML =
+        "Your Civic Score: " + score;
+
+    document.getElementById("answers").innerHTML = "";
+
+    showFeedback(
+        "🇳🇬 <strong>Civic Quest: Nigeria</strong><br><br>" +
+        "You are learning how responsible citizens " +
+        "can make better decisions in their communities."
+    );
+
+    document.getElementById("nextBtn").style.display =
+        "none";
+
+}
+
+</script>
+
+</body>
+  </html>
