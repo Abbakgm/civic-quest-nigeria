@@ -149,6 +149,13 @@
         .playerName {
             color: #d9f5e5;
         }
+        #missionMap {
+    display: none;
+}
+
+#missionMap button {
+    text-align: left;
+}
     </style>
 </head>
 
@@ -702,7 +709,44 @@ function restartGame() {
         "";
 
 }
+<script>
 
+// sauran JavaScript ɗinka a nan...
+
+function showMissionMap() {
+
+    document.getElementById("homeScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("missionMap").style.display = "block";
+
+}
+
+function openMission(index) {
+
+    currentMission = index;
+
+    document.getElementById("missionMap").style.display = "none";
+    document.getElementById("homeScreen").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+
+    showMission();
+
+}
+
+function backHome() {
+
+    clearInterval(timerInterval);
+
+    document.getElementById("missionMap").style.display = "none";
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("homeScreen").style.display = "block";
+
+}
+
+</script>
 </script>
 
 </body>
