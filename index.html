@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Civic Quest: Nigeria</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #063b25, #0b6b3a);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 430px;
+            text-align: center;
+        }
+
+        .flag {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: #d9f5e5;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.12);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start {
+            background: white;
+            color: #075c32;
+        }
+
+        .secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        #gameScreen {
+            display: none;
+        }
+
+        .mission {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .mission h2 {
+            margin-bottom: 10px;
+        }
+
+        .question {
+            background: rgba(0,0,0,0.15);
+            padding: 18px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+
+        .answer {
+            background: white;
+            color: #222;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HOME SCREEN -->
+    <div id="homeScreen" class="card">
+
+        <div class="flag">🇳🇬</div>
+
+        <h1>Civic Quest: Nigeria</h1>
+
+        <p class="tagline">
+            Learn • Decide • Build Nigeria
+        </p>
+
+        <button class="start" onclick="startGame()">
+            🎮 START GAME
+        </button>
+
+        <button class="secondary">
+            🗺️ MISSIONS
+        </button>
+
+        <button class="secondary">
+            🏆 LEADERBOARD
+        </button>
+
+    </div>
+
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="card">
+
+        <div class="mission">
+            <p>MISSION 1 OF 5</p>
+            <h2>🗳️ The Election</h2>
+        </div>
+
+        <div class="question">
+
+            <p>
+                You discover that someone is trying to influence
+                voters in your community by offering them money.
+            </p>
+
+            <br>
+
+            <strong>
+                What should a responsible citizen do?
+            </strong>
+
+        </div>
+
+        <button class="answer" onclick="checkAnswer(false)">
+            A. Accept the money
+        </button>
+
+        <button class="answer" onclick="checkAnswer(false)">
+            B. Ignore the situation
+        </button>
+
+        <button class="answer" onclick="checkAnswer(true)">
+            C. Reject it and report it properly
+        </button>
+
+        <button class="answer" onclick="checkAnswer(false)">
+            D. Fight the person
+        </button>
+
+        <div id="feedback"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function startGame() {
+
+    document.getElementById("homeScreen").style.display = "none";
+
+    document.getElementById("gameScreen").style.display = "block";
+
+}
+
+
+function checkAnswer(correct) {
+
+    const feedback = document.getElementById("feedback");
+
+    if (correct) {
+
+        feedback.innerHTML =
+            "✅ Excellent decision!<br><br>" +
+            "🤖 AI Civic Coach: A responsible citizen " +
+            "should reject vote buying and use lawful ways " +
+            "to report the situation.";
+
+    } else {
+
+        feedback.innerHTML =
+            "❌ Not the best choice.<br><br>" +
+            "🤖 AI Civic Coach: Think about peaceful and " +
+            "lawful ways to protect the community.";
+
+    }
+
+}
+
+</script>
+
+</body>
+  </html>
