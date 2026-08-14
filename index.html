@@ -178,16 +178,53 @@
             🎮 START GAME
         </button>
 
-        <button class="secondary">
-            🗺️ MISSIONS
-        </button>
+        <button class="secondary" onclick="showMissionMap()">
+    🗺️ MISSIONS
+</button>
 
         <button class="secondary">
             🏆 LEADERBOARD
         </button>
 
     </div>
+<!-- MISSION MAP -->
+<div id="missionMap" class="card">
 
+    <div style="text-align:center;">
+        <div class="flag">🗺️</div>
+
+        <h1>Mission Map</h1>
+
+        <p class="tagline">
+            Complete the missions and become a Civic Champion!
+        </p>
+    </div>
+
+    <button class="secondary" onclick="openMission(0)">
+        🗳️ Mission 1 — The Election
+    </button>
+
+    <button class="secondary" onclick="openMission(1)">
+        🚰 Mission 2 — The Water Problem
+    </button>
+
+    <button class="secondary" onclick="openMission(2)">
+        🌳 Mission 3 — Protect Our Environment
+    </button>
+
+    <button class="secondary" onclick="openMission(3)">
+        🏛️ Mission 4 — Know Your Government
+    </button>
+
+    <button class="secondary" onclick="openMission(4)">
+        🤝 Mission 5 — Build the Community
+    </button>
+
+    <button class="start" onclick="backHome()">
+        ⬅️ BACK HOME
+    </button>
+
+</div>
 
     <!-- GAME SCREEN -->
     <div id="gameScreen" class="card">
@@ -390,7 +427,7 @@ let answered = false;
 let playerName = "";
 
 
-function startGame() {
+function startGame()document.getElementById("missionMap").style.display = "none"; {
 
     const nameInput =
         document.getElementById("playerName");
