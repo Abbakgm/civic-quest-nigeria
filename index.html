@@ -486,37 +486,30 @@ function hideAllScreens() {
 
 }
 
-
 function startGame() {
 
-    const input =
-        document.getElementById("playerName");
+    const input = document.getElementById("playerName");
 
-    playerName =
-        input.value.trim();
+    playerName = input.value.trim();
 
     if (playerName === "") {
-
         alert("Please enter your name first.");
-
-        input.focus();
-
         return;
-
     }
 
     currentMission = 0;
-
     score = 0;
 
     document.getElementById("score").textContent = "0";
 
-    hideAllScreens();
+    document.getElementById("homeScreen").style.display = "none";
+    document.getElementById("missionMap").style.display = "none";
+    document.getElementById("resultScreen").style.display = "none";
+    document.getElementById("leaderboardScreen").style.display = "none";
 
     document.getElementById("gameScreen").style.display = "block";
 
     showMission();
-
 }
 
 
