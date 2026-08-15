@@ -914,9 +914,7 @@ function restartGame() {
         playerName;
 
 }
-
-</script>
-    function saveScore() {
+function saveScore() {
 
     let leaderboard =
         JSON.parse(localStorage.getItem("civicLeaderboard")) || [];
@@ -937,9 +935,76 @@ function restartGame() {
         "civicLeaderboard",
         JSON.stringify(leaderboard)
     );
-
-    displayLeaderboard();
 }
+
+
+function showLeaderboard() {
+
+    clearInterval(timerInterval);
+
+    hideAllScreens();
+
+    document.getElementById("leaderboardScreen").style.display =
+        "block";
+
+    const leaderboard =
+        JSON.parse(localStorage.getItem("civicLeaderboard")) || [];
+
+    const screen =
+        document.getElementById("leaderboardScreen");
+
+    let html = `
+        <div class="flag">🏆</div>
+        <h1>Leaderboard</h1>
+        <p class="tagline">Top Civic Champions</p>
+    `;
+
+    if (leaderboard.length === 0) {
+
+        html += `
+            <p>No scores yet.</p>
+        `;
+
+    } else {
+
+        leaderboard.forEach(function(player, index) {
+
+            let medal;
+
+            if (index === 0) medal = "🥇";
+            else if (index === 1) medal = "🥈";
+            else if (index === 2) medal = "🥉";
+            else medal = "#" + (index + 1);
+
+            html += `
+                <div style="
+                    background: rgba(255,255,255,0.12);
+                    padding: 14px;
+                    margin-top: 10px;
+                    border-radius: 12px;
+                    text-align: left;
+                ">
+                    <strong>${medal} ${player.name}</strong>
+                    <br>
+                    🏆 ${player.score} Civic Points
+                    <br>
+                    ⭐ ${player.level}
+                </div>
+            `;
+
+        });
+
+    }
+
+    html += `
+        <button class="start" onclick="backHome()">
+            ⬅️ BACK HOME
+        </button>
+    `;
+
+    screen.innerHTML = html;
+        }
+</script>
 
 </body>
   </html>
