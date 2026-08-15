@@ -690,14 +690,13 @@ function disableAnswers() {
 
     });
 
-}
-
-
 function nextMission() {
 
-    currentMission++;
+    clearInterval(timerInterval);
 
-    if (currentMission < missions.length) {
+    if (currentMission < missions.length - 1) {
+
+        currentMission++;
 
         showMission();
 
@@ -714,10 +713,11 @@ function showResults() {
 
     clearInterval(timerInterval);
 
-    hideAllScreens();
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("missionMap").style.display = "none";
+    document.getElementById("leaderboardScreen").style.display = "none";
 
-    document.getElementById("resultScreen").style.display =
-        "block";
+    document.getElementById("resultScreen").style.display = "block";
 
     document.getElementById("finalName").textContent =
         playerName;
@@ -725,11 +725,8 @@ function showResults() {
     document.getElementById("finalScore").textContent =
         score;
 
-    const level =
-        getCivicLevel(score);
-
     document.getElementById("civicLevel").textContent =
-        level;
+        getCivicLevel(score);
 
     document.getElementById("finalMessage").textContent =
         "Keep learning, making responsible decisions, and helping your community.";
