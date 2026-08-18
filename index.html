@@ -783,6 +783,18 @@ function openMission(index) {
     showMission();
 
 }
+    function showLeaderboard() {
+
+    clearInterval(timerInterval);
+
+    hideAllScreens();
+
+    document.getElementById("leaderboardScreen").style.display =
+        "block";
+
+    displayLeaderboard();
+
+}
 
 function displayLeaderboard() {
 
